@@ -1,18 +1,17 @@
+import Footer from './componentes/footer/Footer';
+import Navbar from './componentes/navbar/Navbar';
 import Home from './paginas/home/Home';
-import './App.css';
-import Footer from './paginas/footer/Footer';
 
 
-function App(){
 
-  return(
-
-    <>
-    <Home/>
-    <Footer/>
-    
-    </>
-  )
+function App() {
+  return (
+    <div>
+      <Navbar/>
+      <Home />
+      <Footer />
+    </div>
+  );
 }
 
 export default App;
