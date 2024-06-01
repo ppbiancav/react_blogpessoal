@@ -2,22 +2,38 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext";
 import Tema from "../../../models/Tema";
-import { RotatingLines } from "react-loader-spinner";
 import { atualizar, buscar, cadastrar } from "../../../services/Service";
-
-
+import { RotatingLines } from "react-loader-spinner";
+import { ToastAlerta } from "../../../utils/ToastAlerta";
 
 function FormTema() {
 
     const navigate = useNavigate()
 
-    // Receber os dados do Tema, que será cadastrado ou atualizado
     const [tema, setTema] = useState<Tema>({} as Tema);
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const { usuario, handleLogout } = useContext(AuthContext)
     const token = usuario.token
 
+    /**
+     * Acessamos o parâmetro id, enviado dentro da URL da rota editartema, 
+     * através do Hook useParams.
+     * 
+     * A variável id, estará presente na URL da rota do Componente FormTema, 
+     * sempre que o usuário clicar no botão Editar, de qualquer um dos Cards 
+     * do Componente ListaTemas, indicando uma atualização nos dados de um tema. 
+     * 
+     * O Hook useParams, da Biblioteca React Router DOM possui 2 parâmetros:
+     * 
+     * const { id }: Usando a desestruturação de objetos, extraímos o valor do 
+     * parâmetro "id" da URL e atribuimos à variável id. O { id } corresponde 
+     * ao nome do parâmetro que será acessado.
+     * 
+     * useParams<{ id: string }>(): Utilizamos o Hook useParams, para acessar 
+     * o parâmetro id, na URL da rota. Observe que o parâmetro id, foi tipado 
+     * como string, porque a URL é uma string.
+     */
     const { id } = useParams<{ id: string }>()
 
     async function buscarPorId(id: string) {
@@ -27,7 +43,6 @@ function FormTema() {
             })
         } catch (error: any) {
             if (error.toString().includes('401')) {
-                alert('O token expirou!')
                 handleLogout()
             }
         }
@@ -35,11 +50,20 @@ function FormTema() {
 
     useEffect(() => {
         if (token === '') {
-            alert('Você precisa estar logado!')
+            ToastAlerta('Você precisa estar logado!', 'info')
             navigate('/')
         }
     }, [token])
 
+    /**
+     * Este useEffect executará a função buscarPorId(id), sempre que 
+     * o valor da variável id for modificado. Na prática, todas as 
+     * vezes que o usuário clicar no botão Editar de qualquer CardTemas,
+     * o id do tema será passado na URL da rota, caracterizando uma 
+     * mudança no valor da variável id, executando a função buscarPorId(id). 
+     * Os dados obtidos na Resposta da Requisição, serão utilizados para 
+     * preencher os campos do Fomulário Tema, no modo Editar Tema.
+     */
     useEffect(() => {
         if (id !== undefined) {
             buscarPorId(id)
@@ -57,6 +81,19 @@ function FormTema() {
         navigate('/temas')
     }
 
+    /**
+     * Criamos a função gerarNovoTema, responsável por criar e 
+     * atualizar os temas da aplicação.
+     * 
+     * Atravás de um Laço Condicional, a função verificará se a 
+     * variável id é diferente de undefined:
+     * 
+     * - Se for diferente de undefined, a função assume que se 
+     *   trata da atualização de um tema existente (PUT). 
+     * 
+     * - Se não diferente de undefined, a função assume que se 
+     *   trata da criação de um novo tema (POST).
+     */
     async function gerarNovoTema(e: ChangeEvent<HTMLFormElement>) {
         e.preventDefault()
         setIsLoading(true)
@@ -67,13 +104,12 @@ function FormTema() {
                 await atualizar(`/temas`, tema, setTema, {
                     headers: { 'Authorization': token }
                 });
-                alert('Tema atualizado com sucesso!');
+                ToastAlerta('Tema atualizado com sucesso!', 'sucesso');
             } catch (error: any) {
                 if (error.toString().includes('401')) {
-                    alert('O token Expirou!')
                     handleLogout()
                 } else {
-                    alert('Erro ao atualizar o Tema!')
+                    ToastAlerta('Erro ao atualizar o Tema!', 'erro')
                 }
             }
 
@@ -83,13 +119,12 @@ function FormTema() {
                 await cadastrar(`/temas`, tema, setTema, {
                     headers: { 'Authorization': token }
                 });
-                alert('Tema cadastrado com sucesso!');
+                ToastAlerta('Tema cadastrado com sucesso!', 'sucesso');
             } catch (error: any) {
                 if (error.toString().includes('401')) {
-                    alert('O token Expirou!')
                     handleLogout()
                 } else {
-                    alert('Erro ao cadastrar o Tema!')
+                    ToastAlerta('Erro ao cadastrar o Tema!', 'erro')
                 }
             }
 
@@ -99,11 +134,20 @@ function FormTema() {
         retornar()
     }
 
-    console.log(JSON.stringify(tema))
-
     return (
         <div className="container flex flex-col items-center justify-center mx-auto">
             <h1 className="text-4xl text-center my-8">
+
+                {/* 
+                    Através de uma Expressão Ternária, utilizaremos a variável id 
+                    para definir se o título do formulário será Cadastrar Tema ou 
+                    Editar Tema, indicando os respectivos processos:
+                    
+                    - Se o id estiver com o valor undefined, exibiremos o texto 
+                      Cadastrar Tema;
+                    
+                    - Caso contrário, exibiremos o texto Editar Tema.
+                */}
                 {id === undefined ? 'Cadastrar Tema' : 'Editar Tema'}
             </h1>
 
