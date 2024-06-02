@@ -41,7 +41,7 @@ function Navbar() {
 
         component = (
             <div className='w-full flex justify-center py-4
-                            bg-indigo-900 text-white'>
+                            bg-pink-700 text-white'>
 
                 <div className="container flex justify-between text-lg">
                     <Link to="/home" className="text-2xl font-bold">Blog Pessoal</Link>

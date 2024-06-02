@@ -161,8 +161,8 @@ function Login() {
                     </div>
                     <button
                         type='submit'
-                        className="rounded bg-indigo-400 flex justify-center
-                                   hover:bg-indigo-900 text-white w-1/2 py-2">
+                        className="rounded bg-pink-400 flex justify-center
+                                   hover:bg-pink-900 text-white w-1/2 py-2">
 
                         {/* 
                             Através de uma Expressão Ternária, verificaremos qual é o valor atual do Estado 
@@ -200,7 +200,7 @@ function Login() {
                         {/* 
                             Criamos um link para a Rota /cadastro - Componente Cadastro
                         */}
-                        <Link to='/cadastro' className="text-indigo-800 hover:underline">
+                        <Link to='/cadastro' className="text-yellow-400 hover:underline">
                             Cadastre-se
                         </Link>
                     </p>
